@@ -1,0 +1,15 @@
+﻿version: '3.4'
+
+services:
+  edwardhsu.dns.main:
+    image: ${DOCKER_REGISTRY-}edwardhsudnsmain
+    build:
+      context: .
+      dockerfile: EdwardHsu.Dns.Main/Dockerfile
+    depends_on:
+      - edwardhsu.dns.redisstore
+    environment:
+      EHDNS_RedisConnectionString: edwardhsu.dns.redisstore
+      EHDNS_RedisDBNumber: 0
+  edwardhsu.dns.redisstore:
+    image: redis

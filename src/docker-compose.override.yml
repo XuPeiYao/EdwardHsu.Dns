@@ -1,0 +1,7 @@
+﻿version: '3.4'
+services:
+  edwardhsu.dns.main:
+    environment:
+      EHDNS_RedisConnectionString: 192.168.192.1
+    ports:
+      - "8080:53/udp"

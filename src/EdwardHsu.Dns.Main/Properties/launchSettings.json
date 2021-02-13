@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EdwardHsu.Dns.Main": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

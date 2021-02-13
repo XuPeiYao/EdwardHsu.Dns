@@ -5,10 +5,13 @@ using EnumsNET;
 
 using Microsoft.Extensions.Options;
 
+using Newtonsoft.Json.Linq;
+
 using StackExchange.Redis;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EdwardHsu.Dns.RedisStore
@@ -49,6 +52,37 @@ namespace EdwardHsu.Dns.RedisStore
                     result.AddRange(FindResourceRecords(fqdn, member.Value));
                 }
                 return result.ToArray();
+            }
+
+            var db = GetDatabase();
+
+            var key = new RedisKey(fqdn);
+
+            if (db.KeyExists(key))
+            {
+                var storedRecords = db.ListRange(key)
+                    .Select(x => x.ToString())
+                    .Select(x => JObject.Parse(x));
+
+                foreach (var storedRecord in storedRecords)
+                {
+                    result.Add(new StoreRecord()
+                    {
+                        Content = storedRecord["content"].Value<string>(),
+                        TTL = storedRecord["ttl"]?.Value<int>() ?? 0,
+                        Type = Enums.Parse<RecordType>(storedRecord["type"].Value<string>())
+                    });
+                }
+            }
+
+            switch (type)
+            {
+                case RecordType.A:
+                case RecordType.AAAA:
+                    break;
+                default:
+                    result = result.Where(x => x.Type == type).ToList();
+                    break;
             }
 
             return result.ToArray();
