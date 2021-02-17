@@ -68,6 +68,7 @@ namespace EdwardHsu.Dns.RedisStore
                 {
                     result.Add(new StoreRecord()
                     {
+                        Domain = fqdn,
                         Content = storedRecord["content"].Value<string>(),
                         TTL = storedRecord["ttl"]?.Value<int>() ?? 0,
                         Type = Enums.Parse<RecordType>(storedRecord["type"].Value<string>())
@@ -75,15 +76,7 @@ namespace EdwardHsu.Dns.RedisStore
                 }
             }
 
-            switch (type)
-            {
-                case RecordType.A:
-                case RecordType.AAAA:
-                    break;
-                default:
-                    result = result.Where(x => x.Type == type).ToList();
-                    break;
-            }
+            result = result.Where(x => x.Type == type).ToList();
 
             return result.ToArray();
         }
